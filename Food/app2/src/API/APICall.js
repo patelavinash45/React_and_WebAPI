@@ -1,21 +1,21 @@
 import axios from 'axios';
-
-const setHeader = (jwtToken) => {
-    api.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
-}
+import { useNavigate } from 'react-router-dom';
 
 const handleResponse = response => {
-    return response.data.isSusses
-        ? {
-            IsSusses: true,
-            Data: response.data.result,
-        }
-        : {
-            IsSusses: false,
-            ErrorMessage: response.data.errorMessage,
-        }
+    return {
+        IsSusses: true,
+        Data: response.data.result,
+    }
 }
 
+const handleErrorResponse = response => {
+    console.log(response);
+    return {
+        IsSusses: false,
+        Data: 'LogIn Again !!',
+        Navigate: '/Auth/Login'
+    }
+}
 
 let api = axios.create({
     baseURL: 'http://localhost:5074',
@@ -23,15 +23,15 @@ let api = axios.create({
 
 const apiCall = async (request) => {
     try {
+        api.defaults.headers.common['Authorization'] = `${localStorage.getItem('jwtToken')}`;
         return handleResponse(await request());
     }
     catch (e) {
-        return handleResponse(e.response);
+        return handleErrorResponse(e.response.data);
     }
 }
 
 const GetFoodList = async () => {
-    console.log(api);
     return await apiCall(() => api.get(`/Food/GetFoodList`));
 };
 
@@ -71,6 +71,5 @@ export {
     ChangeProductCount,
     PlaceOrder,
     ValidateUser,
-    CreateUser,
-    setHeader
+    CreateUser
 };

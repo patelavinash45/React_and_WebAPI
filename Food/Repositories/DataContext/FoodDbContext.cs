@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using FoodAPI.DataModels;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Repositories.DataModels;
 
 namespace FoodDbContext;
 

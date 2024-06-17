@@ -1,9 +1,6 @@
-using System.Net;
-using FoodAPI.Auth;
-using FoodAPI.DataModels;
-using FoodAPI.Dtos;
-using FoodDbContext;
+using FoodAPI.StaticMethods;
 using Microsoft.AspNetCore.Mvc;
+using Services.Dtos;
 
 namespace FoodAPI.Controllers
 {
@@ -11,15 +8,13 @@ namespace FoodAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly APIResponse _apiResponse;
-        private readonly FoodContext _foodContext;
         private readonly IJwtService _jwtService;
+        private readonly IUserService _userService;
 
-        public UserController(FoodContext foodContext, IJwtService jwtService)
+        public UserController(IJwtService jwtService, IUserService userService)
         {
-            _foodContext = foodContext;
             _jwtService = jwtService;
-            _apiResponse = new();
+            _userService = userService;
         }
 
         [HttpPatch("ValidateUser", Name = "ValidateUser")]
@@ -32,32 +27,24 @@ namespace FoodAPI.Controllers
             {
                 if (model == null)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _apiResponse.ErrorMessage = new List<string>() { "URL is Not Valid." };
-                    return BadRequest(_apiResponse);
+                    return BadRequest(HelperClass.ManageBadRequest("URL is Not Valid."));
                 }
-                User? user = _foodContext.Users.FirstOrDefault(a => a.Email == model.Email && a.Password == model.Password);
-                if (user == null)
+                JwtUserDto? jwtUserDto = _userService.ValidateUser(model);
+                if (jwtUserDto != null)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.NotFound;
-                    _apiResponse.ErrorMessage = new List<string>() { "User is Not Found." };
-                    return NotFound(_apiResponse);
+                    var result = new
+                    {
+                        jwtToken = _jwtService.CreateJwtToken(jwtUserDto),
+                        userId = jwtUserDto.UserId,
+                        name = jwtUserDto.Name
+                    };
+                    return Ok(HelperClass.ManageOkRequest(result));
                 }
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                _apiResponse.IsSusses = true;
-                _apiResponse.Result = new
-                {
-                    jwtToken = _jwtService.CreateJwtToken(user),
-                    userId = user.UserId,
-                    name = user.Name
-                };
-                return Ok(_apiResponse);
+                return StatusCode(500, HelperClass.ManageInternalServerError());
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -70,31 +57,24 @@ namespace FoodAPI.Controllers
             {
                 if (model == null)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _apiResponse.ErrorMessage = new List<string>() { "URL is Not Valid." };
-                    return BadRequest(_apiResponse);
+                    return BadRequest(HelperClass.ManageBadRequest("URL is Not Valid."));
                 }
-                User user = new User()
+                JwtUserDto? jwtUserDto = await _userService.AddUser(model);
+                if (jwtUserDto != null)
                 {
-                    Email = model.Email,
-                    Password = model.Password,
-                    Name = model.Name,
-                    Phone = model.Phone
-                };
-                _foodContext.Users.Add(user);
-                _apiResponse.IsSusses = await _foodContext.SaveChangesAsync() > 0;
-                _apiResponse.Result = _apiResponse.Result = new
-                {
-                    userId = user.UserId,
-                    name = user.Name
-                };
-                return Ok(_apiResponse);
+                    var result = new
+                    {
+                        jwtToken = _jwtService.CreateJwtToken(jwtUserDto),
+                        userId = jwtUserDto.UserId,
+                        name = jwtUserDto.Name
+                    };
+                    return Ok(HelperClass.ManageOkRequest(result));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerError());
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
     }

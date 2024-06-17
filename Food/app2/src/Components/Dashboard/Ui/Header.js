@@ -9,9 +9,11 @@ import { GetCartList } from "../../../API/APICall";
 import { useState } from "react";
 import MenuList from "./MenuList";
 import CartModal from "./CartModal";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
 
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isShowModal, setIsShowModal] = useState(false);
     const cartList = useSelector(state => state);
@@ -20,13 +22,6 @@ const Header = () => {
         count += cart.getcart[2];
     });
     const addDataDispatch = useDispatch();
-
-    const fetchCartData = async () => {
-        const result = await GetCartList(1);
-        if (result.IsSusses) {
-            addDataDispatch(Cart.actions.storeCartData(result.Data));
-        }
-    }
 
     const onCartIconsClick = () => {
         if (count > 0) {
@@ -42,9 +37,19 @@ const Header = () => {
         setAnchorEl(event.currentTarget);
     }
 
+    const fetchCartData = async () => {
+        const result = await GetCartList(1);
+        if (result.IsSusses) {
+            addDataDispatch(Cart.actions.storeCartData(result.Data));
+        }
+        else {
+            navigate(result.Navigate, { state: result.Data });
+        }
+    }
+
     useEffect(() => {
         fetchCartData();
-    });
+    }, []);
 
     return (
         <AppBar>

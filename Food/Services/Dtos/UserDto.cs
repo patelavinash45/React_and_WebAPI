@@ -1,4 +1,4 @@
-namespace FoodAPI.Dtos;
+namespace Services.Dtos;
 
 public class UserDto
 {
@@ -16,4 +16,13 @@ public class CreateUserDto
     public required string Password { get; set; }
 
     public required string Phone { get; set; }
+}
+
+public class JwtUserDto
+{
+    public int UserId { get; set; }
+
+    public required string Email { get; set; }
+
+    public required string Name { get; set; }
 }

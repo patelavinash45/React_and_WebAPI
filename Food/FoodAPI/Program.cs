@@ -1,4 +1,3 @@
-using FoodAPI.Auth;
 using FoodDbContext;
 using Microsoft.OpenApi.Models;
 
@@ -12,13 +11,19 @@ builder.Services.AddCors(c =>
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddDbContext<FoodContext>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "JWTToken_Auth_API",
+        Title = "Food API",
         Version = "v1"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

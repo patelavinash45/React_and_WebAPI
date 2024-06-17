@@ -1,12 +1,9 @@
-using FoodAPI.Auth;
-using FoodAPI.DataModels;
 using FoodAPI.Dtos;
+using FoodAPI.StaticMethods;
 using FoodDbContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using System.Data;
-using System.Net;
+using Services.Dtos;
 
 namespace FoodAPI.Controllers
 {
@@ -14,17 +11,17 @@ namespace FoodAPI.Controllers
     [Route("[controller]")]
     public class FoodController : ControllerBase
     {
-        private readonly APIResponse _apiResponse;
         private readonly FoodContext _foodContext;
-        private readonly IConfiguration _configuration;
-        private readonly IJwtService _jwtService;
+        private readonly string? _configurationString;
+        private readonly ICartService _cartService;
+        private readonly IOrderService _orderService;
 
-        public FoodController(FoodContext foodContext, IConfiguration configuration, IJwtService jwtService)
+        public FoodController(FoodContext foodContext, IConfiguration configuration, ICartService cartService, IOrderService orderService)
         {
-            _apiResponse = new();
             _foodContext = foodContext;
-            _configuration = configuration;
-            _jwtService = jwtService;
+            _cartService = cartService;
+            _orderService = orderService;
+            _configurationString = configuration.GetConnectionString("DefaultString");
         }
 
         [Authorization]
@@ -37,16 +34,12 @@ namespace FoodAPI.Controllers
         {
             try
             {
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                _apiResponse.IsSusses = true;
-                _apiResponse.Result = _foodContext.FoodLists.ToList();
-                return Ok(_apiResponse);
+                var foodList = _foodContext.FoodLists.ToList();
+                return Ok(HelperClass.ManageOkRequest(foodList));
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -60,28 +53,12 @@ namespace FoodAPI.Controllers
         {
             try
             {
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                _apiResponse.IsSusses = true;
-                var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultString"));
-                connection.Open();
-                var command = new NpgsqlCommand("SELECT getCart(@userId)", connection);
-                command.Parameters.AddWithValue("@userId", userId);
-                DataTable dataTable = new();
-                using (var reader = command.ExecuteReader())
-                {
-                    dataTable.Load(reader);
-                }
-                connection.Close();
-                _apiResponse.Result = dataTable;
-                //_apiResponse.Result = _foodContext.Carts.Include(a => a.Food).Include(a => a.User).Where(a => a.UserId == userId).ToList();
-                //_apiResponse.Result = _foodContext.FoodLists.Include(a => a.Carts.Where(a =>a.UserId == userId)).Where(a => a.Carts.Any()).ToList();
-                return Ok(_apiResponse);
+                object result = HelperClass.ManageQuery("SELECT getCart(@userId)", userId, _configurationString);
+                return Ok(HelperClass.ManageOkRequest(result));
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -95,26 +72,12 @@ namespace FoodAPI.Controllers
         {
             try
             {
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                _apiResponse.IsSusses = true;
-                var connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultString"));
-                connection.Open();
-                var command = new NpgsqlCommand("SELECT getCartCount(@userId)", connection);
-                command.Parameters.AddWithValue("@userId", userId);
-                DataTable dataTable = new();
-                using (var reader = command.ExecuteReader())
-                {
-                    dataTable.Load(reader);
-                }
-                connection.Close();
-                _apiResponse.Result = dataTable;
-                return Ok(_apiResponse);
+                object result = HelperClass.ManageQuery("SELECT getCartCount(@userId)", userId, _configurationString);
+                return Ok(HelperClass.ManageOkRequest(result));
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -124,36 +87,23 @@ namespace FoodAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> AddProductToCart(int userId, [FromBody] Cart model)
+        public async Task<ActionResult<APIResponse>> AddProductToCart(int userId, [FromBody] CartDto model)
         {
             try
             {
                 if (userId <= 0 || model.UserId <= 0)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _apiResponse.ErrorMessage = new List<string>() { "UserId is Not Valid." };
-                    return BadRequest(_apiResponse);
+                    return BadRequest(HelperClass.ManageBadRequest("UserId Invalid."));
                 }
-                Cart? cart = _foodContext.Carts.FirstOrDefault(a => a.UserId == userId && a.FoodId == model.FoodId);
-                if (cart == null)
+                if (await _cartService.AddProductToCart(model))
                 {
-                    _foodContext.Carts.Add(model);
+                    return Ok(HelperClass.ManageOkRequest(model));
                 }
-                else
-                {
-                    cart.Count += model.Count;
-                    _foodContext.Carts.Update(cart);
-                }
-                _apiResponse.IsSusses = await _foodContext.SaveChangesAsync() > 0;
-                _apiResponse.Result = cart ?? model;
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(_apiResponse);
+                return StatusCode(500, HelperClass.ManageInternalServerError());
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -169,23 +119,20 @@ namespace FoodAPI.Controllers
             {
                 if (userId <= 0 || cartId <= 0 || newCount <= 0)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _apiResponse.ErrorMessage = new List<string>() { "Invalid Request." };
-                    return BadRequest(_apiResponse);
+                    return BadRequest(HelperClass.ManageBadRequest("Invalid Request."));
                 }
-                Cart? cart = _foodContext.Carts.FirstOrDefault(a => a.UserId == userId && a.CartId == cartId);
-                cart.Count = newCount;
-                _foodContext.Carts.Update(cart);
-                _apiResponse.IsSusses = await _foodContext.SaveChangesAsync() > 0;
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                _apiResponse.Result = cart;
-                return Ok(_apiResponse);
+                if (await _cartService.ChangeCart(userId, cartId, newCount))
+                {
+                    return Ok(HelperClass.ManageOkRequest(new
+                    {
+                        cartId = cartId
+                    }));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerError());
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
 
@@ -201,35 +148,20 @@ namespace FoodAPI.Controllers
             {
                 if (userId <= 0 || orderDto == null)
                 {
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _apiResponse.ErrorMessage = new List<string>() { "Invalid Request." };
-                    return BadRequest(_apiResponse);
+                    return BadRequest(HelperClass.ManageBadRequest("Invalid Request."));
                 }
-                Order order = new()
+                if (await _orderService.AddOrder(orderDto, userId))
                 {
-                    UserId = userId,
-                    Date = DateTime.Now,
-                    Address = orderDto.Address,
-                    OrderDetails = orderDto.OrderDetailsDtos.Select(
-                        orderDto => new OrderDetail()
-                        {
-                            FoodId = orderDto.FoodId,
-                            Count = orderDto.Count,
-                            Amount = orderDto.Amount,
-                        }).ToList(),
-                };
-                _foodContext.Orders.Add(order);
-                List<Cart> carts = _foodContext.Carts.Where(a => a.UserId == userId).ToList();
-                _foodContext.Carts.RemoveRange(carts);
-                _apiResponse.IsSusses = await _foodContext.SaveChangesAsync() > 0;
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(_apiResponse);
+                    if (await _cartService.DeleteCarts(userId))
+                    {
+                        return Ok(HelperClass.ManageOkRequest(orderDto));
+                    }
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerError());
             }
             catch (Exception e)
             {
-                _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.ErrorMessage = new List<string>() { e.ToString() };
-                return BadRequest(_apiResponse);
+                return BadRequest(HelperClass.ManageBadRequest(e.ToString()));
             }
         }
     }

@@ -1,10 +1,10 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Services.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FoodAPI.DataModels;
-using Microsoft.IdentityModel.Tokens;
 
-namespace FoodAPI.Auth;
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
@@ -14,32 +14,32 @@ public class JwtService : IJwtService
         _configuration = configuration;
     }
 
-    public string CreateJwtToken(User user)
+    public string CreateJwtToken(JwtUserDto user)
     {
         List<Claim> claims = new List<Claim>{
             new("userId", user.UserId.ToString()),
             new("name", user.Name),
             new("email", user.Email)
         };
-        SymmetricSecurityKey Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
-        SigningCredentials creds = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
-        JwtSecurityToken token = new JwtSecurityToken(
+        SymmetricSecurityKey Key = new(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]!));
+        SigningCredentials creds = new(Key, SecurityAlgorithms.HmacSha256);
+        JwtSecurityToken token = new(
             _configuration["Jwt:Issuer"],
             _configuration["Jwt:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(5),
+            expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool ValidateToken(String token, out JwtSecurityToken? jwtToken)
+    public bool ValidateToken(string? token, out JwtSecurityToken? jwtToken)
     {
         jwtToken = null;
         if (token != null)
         {
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SymmetricSecurityKey Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
+            JwtSecurityTokenHandler tokenHandler = new();
+            SymmetricSecurityKey Key = new(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]!));
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -51,10 +51,7 @@ public class JwtService : IJwtService
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken securityToken);
                 jwtToken = (JwtSecurityToken)securityToken;
-                if (jwtToken != null)
-                {
-                    return true;
-                }
+                return jwtToken != null;
             }
             catch (Exception ex) { }
         }

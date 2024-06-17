@@ -7,16 +7,17 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import CustomInput from './CustomInput';
-import { ValidateUser, setHeader } from '../../../API/APICall';
+import { ValidateUser } from '../../../API/APICall';
 import AlertMessage from '../../Common/AlertMessage';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import YupPassword from 'yup-password';
 YupPassword(Yup);
 
 const LoginForm = () => {
     const navigate = useNavigate();
+    const { state } = useLocation();
     const [isPasswordShow, setIsPasswordShow] = useState(false);
-    const [isShowAlert, setIsShowAlert] = useState(false);
+    const [isShowAlert, setIsShowAlert] = useState(state != null);
 
     const onPasswordIconsClick = () => {
         setIsPasswordShow(previousState => !previousState);
@@ -42,7 +43,6 @@ const LoginForm = () => {
         const result = await ValidateUser(value);
         if (result.IsSusses) {
             localStorage.setItem('jwtToken', result.Data.jwtToken);
-            setHeader(result.Data.jwtToken);
             navigate('/Dashboard');
         }
         else {
@@ -103,7 +103,7 @@ const LoginForm = () => {
                         {
                             isShowAlert
                             && <AlertMessage
-                                message='Wrong'
+                                message={state ?? "Invalid Credentials !!"}
                                 alertType='error'
                                 closeAlert={closeAlert}
                             />

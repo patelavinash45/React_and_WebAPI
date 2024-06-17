@@ -8,9 +8,11 @@ import { AddProductToCart } from '../../../API/APICall';
 import IncrementDecrementDiv from './IncrementDecrementDiv';
 import ItemDetailsDiv from './ItemDetailsDiv';
 import AlertMessage from '../../Common/AlertMessage';
+import { useNavigate } from 'react-router-dom';
 
 const ItemView = ({ foodItem }) => {
 
+    const navigate = useNavigate();
     const [isAddToCartButtonClick, setIsAddToCartButtonClick] = useState(false);
     const [isShowAlert, setIsShowAlert] = useState(false);
     const [count, setCount] = useState(0);
@@ -43,6 +45,9 @@ const ItemView = ({ foodItem }) => {
             setIsShowAlert(true);
             addItemDispatch(Cart.actions.addToCart(item));
             setCount(0);
+        }
+        else {
+            navigate(result.Navigate, { state: result.Data });
         }
         setIsAddToCartButtonClick(false);
     }
