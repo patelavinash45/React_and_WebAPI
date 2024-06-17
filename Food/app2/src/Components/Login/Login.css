@@ -1,0 +1,19 @@
+.backgroundImage {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url('../../Images/backgroundImage.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+form{
+    width: 550px;
+}
+
+@media screen and (max-width: 576px) {
+    form{
+        width: 360px;
+    }
+}

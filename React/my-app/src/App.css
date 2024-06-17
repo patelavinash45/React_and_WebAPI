@@ -1,0 +1,35 @@
+body
+{
+  background-color: #373737;
+}
+
+.newExpenseButton{
+  background-color: #370053;
+}
+
+.newExpense{
+  background-color: #9D87EB;
+}
+
+.dataDiv{
+  background-color: #1d1d1d;
+}
+
+.expenseDiv{
+  background-color: #424242;
+  border-color: black;
+}
+
+.dateDiv{
+  width: 125px;
+  background-color: #1d1d1d;
+  border-color: white;
+  border-width: 1.5px;
+}
+
+.priceDiv{
+  background-color: #370053;
+  border-color: white;
+  border-width: 1.5px;
+  color: white;
+}

@@ -1,0 +1,24 @@
+.item{
+    height: 130px;
+    width: 800px;
+    min-width: 360px;
+}
+
+.span{
+    height: 130px;
+}
+
+.vegImage{
+    height: 25px;
+}
+
+.addDiv{
+    height: 45px;
+    width: 100px;
+}
+
+.itemImage{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
