@@ -54,7 +54,7 @@ const CartModal = props => {
             "totalAmount": totalAmount,
             "orderDetailsDtos": orderDetailsDto
         };
-        const result = await PlaceOrder(orderDTo, 1);
+        const result = await PlaceOrder(orderDTo);
         if (result.IsSusses) {
             cartDispatch(Cart.actions.storeCartData([]));
         }

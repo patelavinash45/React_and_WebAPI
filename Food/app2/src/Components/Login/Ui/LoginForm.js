@@ -43,6 +43,7 @@ const LoginForm = () => {
         const result = await ValidateUser(value);
         if (result.IsSusses) {
             localStorage.setItem('jwtToken', result.Data.jwtToken);
+            localStorage.setItem('userId', result.Data.userId);
             navigate('/Dashboard');
         }
         else {

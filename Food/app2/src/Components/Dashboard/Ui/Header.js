@@ -38,7 +38,7 @@ const Header = () => {
     }
 
     const fetchCartData = async () => {
-        const result = await GetCartList(1);
+        const result = await GetCartList();
         if (result.IsSusses) {
             addDataDispatch(Cart.actions.storeCartData(result.Data));
         }

@@ -1,5 +1,9 @@
 using FoodDbContext;
 using Microsoft.OpenApi.Models;
+using Repositories.Implementation;
+using Repositories.Interface;
+using Services.Implementation;
+using Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +21,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>

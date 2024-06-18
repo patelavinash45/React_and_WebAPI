@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const handleResponse = response => {
     return {
@@ -17,6 +16,10 @@ const handleErrorResponse = response => {
     }
 }
 
+const GetUserId = () => {
+    return localStorage.getItem('userId');
+}
+
 let api = axios.create({
     baseURL: 'http://localhost:5074',
 });
@@ -32,27 +35,27 @@ const apiCall = async (request) => {
 }
 
 const GetFoodList = async () => {
-    return await apiCall(() => api.get(`/Food/GetFoodList`));
+    return await apiCall(() => api.get(`/Food/GetFoodList/${GetUserId()}`));
 };
 
-const GetCartList = async (id) => {
-    return await apiCall(() => api.get(`/Food/GetCartList/${id}`));
+const GetCartList = async () => {
+    return await apiCall(() => api.get(`/Food/GetCartList/${GetUserId()}`));
 };
 
-const GetCartCount = async (id) => {
-    return await apiCall(() => api.get(`/Food/GetCartCount/${id}`));
+const GetCartCount = async () => {
+    return await apiCall(() => api.get(`/Food/GetCartCount/${GetUserId()}`));
 };
 
-const AddProductToCart = async (cart, id) => {
-    return await apiCall(() => api.post(`/Food/AddProductToCart/${id}`, cart));
+const AddProductToCart = async (cart) => {
+    return await apiCall(() => api.post(`/Food/AddProductToCart/${GetUserId()}`, cart));
 }
 
-const ChangeProductCount = async (cartId, newCount, id) => {
-    return await apiCall(() => api.post(`/Food/ChangeCart/${id}?cartId=${cartId}&newCount=${newCount}`));
+const ChangeProductCount = async (cartId, newCount) => {
+    return await apiCall(() => api.post(`/Food/ChangeCart/${GetUserId()}?cartId=${cartId}&newCount=${newCount}`));
 }
 
-const PlaceOrder = async (orderDto, id) => {
-    return await apiCall(() => api.post(`/Food/PlaceOrder/${id}`, orderDto));
+const PlaceOrder = async (orderDto) => {
+    return await apiCall(() => api.post(`/Food/PlaceOrder/${GetUserId()}`, orderDto));
 }
 
 const ValidateUser = async (userDto) => {

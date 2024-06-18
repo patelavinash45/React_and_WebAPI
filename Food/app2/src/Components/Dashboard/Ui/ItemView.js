@@ -37,7 +37,7 @@ const ItemView = ({ foodItem }) => {
             'count': count,
             'foodId': foodItem.foodId
         };
-        const result = await AddProductToCart(cart, 1);
+        const result = await AddProductToCart(cart);
         if (result.IsSusses) {
             const item = {
                 getcart: [result.Data.cartId, result.Data.userId, count, foodItem.foodId, foodItem.isVeg, foodItem.name, foodItem.price],

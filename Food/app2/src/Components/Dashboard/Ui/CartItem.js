@@ -11,7 +11,7 @@ const CartItem = ({ cartItem }) => {
     const [count, setCount] = useState(cartItem[2]);
 
     const handleCount = newCount => {
-        ChangeProductCount(cartItem[0], newCount, 1);
+        ChangeProductCount(cartItem[0], newCount);
         newCount != 0
             ? changeCountDispatch(Cart.actions.changeProductCount({ id: cartItem[0], newCount: newCount }))
             : changeCountDispatch(Cart.actions.removeFromCart({ id: cartItem[0] }))
