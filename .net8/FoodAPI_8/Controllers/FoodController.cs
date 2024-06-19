@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using FoodAPI.Dtos;
 using FoodAPI.StaticMethods;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,10 @@ using Services.Interface;
 
 namespace FoodAPI.Controllers
 {
+    //[Authorization]
     [ApiController]
     [Route("[controller]")]
+    [ApiVersion("1")]
     public class FoodController : ControllerBase
     {
         private readonly string? _configurationString;
@@ -22,13 +25,12 @@ namespace FoodAPI.Controllers
             _configurationString = configuration.GetConnectionString("DefaultString");
         }
 
-        [Authorization]
-        [HttpGet("GetFoodList/{userId}", Name = "GetFoodList")]
+        [HttpGet("GetFoodList", Name = "GetFoodList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<APIResponse> GetFoodList(int userId)
+        public ActionResult<APIResponse> GetFoodList()
         {
             try
             {
@@ -41,7 +43,84 @@ namespace FoodAPI.Controllers
             }
         }
 
-        [Authorization]
+        [HttpGet("GetFood/{foodId}", Name = "GetFood")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<APIResponse> GetFood(int foodId)
+        {
+            try
+            {
+                if (foodId <= 0)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("FoodId Invalid."));
+                }
+                var foodList = _cartService.GetFood(foodId);
+                if (foodList != null)
+                {
+                    return Ok(HelperClass.ManageOkResponse(foodList));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerErrorResponse());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(HelperClass.ManageBadResponse(e.ToString()));
+            }
+        }
+
+        [HttpPost("AddFood", Name = "AddFood")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> AddFood([FromBody] CreateFoodDto createFoodDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("Food Is Invalid."));
+                }
+                int foodId = await _cartService.AddFood(createFoodDto);
+                if (foodId > 0)
+                {
+                    return Ok(HelperClass.ManageOkResponse(new List<int>() { foodId }));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerErrorResponse());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(HelperClass.ManageBadResponse(e.ToString()));
+            }
+        }
+
+        [HttpDelete("DeleteFood/{foodId}", Name = "DeleteFood")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> DeleteFood(int foodId)
+        {
+            try
+            {
+                if (foodId <= 0)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("FoodId Invalid."));
+                }
+                if (await _cartService.DeleteFood(foodId))
+                {
+                    return Ok(HelperClass.ManageOkResponse(new List<int>() { foodId }));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerErrorResponse());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(HelperClass.ManageBadResponse(e.ToString()));
+            }
+        }
+
+        
         [HttpGet("GetCartList/{userId}", Name = "GetCartList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,6 +130,10 @@ namespace FoodAPI.Controllers
         {
             try
             {
+                if (userId <= 0)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("UserId Invalid."));
+                }
                 object result = HelperClass.ManageQuery("SELECT getCart(@userId)", userId, _configurationString);
                 return Ok(HelperClass.ManageOkResponse(result));
             }
@@ -60,7 +143,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        [Authorization]
+        
         [HttpGet("GetCartCount/{userId}", Name = "GetCartCount")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,6 +153,10 @@ namespace FoodAPI.Controllers
         {
             try
             {
+                if (userId <= 0)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("UserId Invalid."));
+                }
                 object result = HelperClass.ManageQuery("SELECT getCartCount(@userId)", userId, _configurationString);
                 return Ok(HelperClass.ManageOkResponse(result));
             }
@@ -79,7 +166,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        [Authorization]
+        
         [HttpPost("AddProductToCart/{userId}", Name = "AddProductToCart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,7 +192,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        [Authorization]
+        
         [HttpPost("ChangeCart/{userId}", Name = "ChangeCart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -134,7 +221,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        [Authorization]
+        
         [HttpPost("PlaceOrder/{userId}", Name = "PlaceOrder")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

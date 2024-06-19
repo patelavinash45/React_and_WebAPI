@@ -30,6 +30,42 @@ namespace Services.Implementation
             }).ToList();
         }
 
+        public FoodDto? GetFood(int foodId)
+        {
+            FoodList? foodList = _foodRepository.GetFood(foodId);
+            if (foodList != null)
+            {
+                return new FoodDto
+                {
+                    FoodId = foodList.FoodId,
+                    Name = foodList.Name,
+                    IsVeg = foodList.IsVeg,
+                    Price = foodList.Price,
+                };
+            }
+            return null;
+        }
+
+        public async Task<int> AddFood(CreateFoodDto createFoodDto)
+        {
+            return await _foodRepository.AddFood(new FoodList()
+            {
+                Name = createFoodDto.Name,
+                IsVeg = createFoodDto.IsVeg,
+                Price = createFoodDto.Price,
+            });
+        }
+
+        public async Task<bool> DeleteFood(int foodId)
+        {
+            FoodList? foodList = _foodRepository.GetFood(foodId);
+            if (foodList != null)
+            {
+                return await _foodRepository.DeleteFood(foodList);
+            }
+            return false;
+        }
+
         public Task<bool> AddProductToCart(CartDto cartDto)
         {
             Cart? cart = _cartRepository.GetCartByUserIdAndFoodId(userId: cartDto.UserId, foodId: cartDto.FoodId);
