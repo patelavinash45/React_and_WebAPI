@@ -14,7 +14,7 @@ namespace Repositories.Implementation
 
         public List<FoodList> GetFoodLists()
         {
-            return _foodContext.FoodLists.ToList();
+            return _foodContext.FoodLists.OrderBy(a => a.FoodId).ToList();
         }
 
         public FoodList? GetFood(int foodId)
@@ -32,6 +32,12 @@ namespace Repositories.Implementation
         public async Task<bool> DeleteFood(FoodList foodList)
         {
             _foodContext.FoodLists.Remove(foodList);
+            return await _foodContext.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateFood(FoodList foodList)
+        {
+            _foodContext.FoodLists.Update(foodList);
             return await _foodContext.SaveChangesAsync() > 0;
         }
     }

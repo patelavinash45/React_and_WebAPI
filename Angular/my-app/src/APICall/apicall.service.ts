@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { FoodItem } from '../Interfaces/food-item';
 
 @Injectable({
   providedIn: 'root',
@@ -24,15 +25,30 @@ export class APICallService {
   // }
 
   public GetAll(): Observable<any> {
-    return this.httpClient.get(
-      this.baseUrl + '/Food/GetFoodList'
+    return this.httpClient.get(this.baseUrl + '/Food/GetFoodList');
+  }
+
+  public GetFoodItem(foodId: number): Observable<any> {
+    return this.httpClient.get(this.baseUrl + '/Food/GetFood/' + foodId);
+  }
+
+  public UpdateFoodItem(foodId: number, foodItem: FoodItem): Observable<any> {
+    return this.httpClient.post(
+      this.baseUrl + '/Food/UpdateFood/' + foodId,
+      JSON.stringify(foodItem),
+      this.httpOptions
     );
   }
 
-  public GetFoodItem(foodId : number): Observable<any> {
-    return this.httpClient.get(
-      this.baseUrl + 'Food/GetFood/' + Number
-    );
+  public DeleteFoodItem(foodId: number): Observable<any> {
+    return this.httpClient.delete(this.baseUrl + '/Food/DeleteFood/' + foodId);
   }
 
+  public AddFoodItem(foodItem: FoodItem): Observable<any> {
+    return this.httpClient.post(
+      this.baseUrl + '/Food/AddFood',
+      JSON.stringify(foodItem),
+      this.httpOptions
+    );
+  }
 }

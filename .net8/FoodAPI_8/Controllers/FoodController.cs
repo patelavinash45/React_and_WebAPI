@@ -95,6 +95,31 @@ namespace FoodAPI.Controllers
             }
         }
 
+        [HttpPost("UpdateFood/{foodId}", Name = "UpdateFood")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> UpdateFood(int foodId, [FromBody] FoodDto foodDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid || foodId <= 0)
+                {
+                    return BadRequest(HelperClass.ManageBadResponse("Food Is Invalid."));
+                }
+                if (await _cartService.UpdateFood(foodDto, foodId))
+                {
+                    return Ok(HelperClass.ManageOkResponse(foodDto));
+                }
+                return StatusCode(500, HelperClass.ManageInternalServerErrorResponse());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(HelperClass.ManageBadResponse(e.ToString()));
+            }
+        }
+
         [HttpDelete("DeleteFood/{foodId}", Name = "DeleteFood")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -120,7 +145,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        
+
         [HttpGet("GetCartList/{userId}", Name = "GetCartList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -143,7 +168,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        
+
         [HttpGet("GetCartCount/{userId}", Name = "GetCartCount")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -166,7 +191,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        
+
         [HttpPost("AddProductToCart/{userId}", Name = "AddProductToCart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -192,7 +217,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        
+
         [HttpPost("ChangeCart/{userId}", Name = "ChangeCart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -221,7 +246,7 @@ namespace FoodAPI.Controllers
             }
         }
 
-        
+
         [HttpPost("PlaceOrder/{userId}", Name = "PlaceOrder")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

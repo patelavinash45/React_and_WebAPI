@@ -11,5 +11,7 @@ namespace Repositories.Interface
         Task<int> AddFood(FoodList foodList);
 
         Task<bool> DeleteFood(FoodList foodList);
+
+        Task<bool> UpdateFood(FoodList foodList);
     }
 }

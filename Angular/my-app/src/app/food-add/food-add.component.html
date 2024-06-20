@@ -1,0 +1,40 @@
+<div class="container fs-4 border border-1 rounded-2 p-3 mt-5">
+    <div class="d-flex justify-content-between mb-3">
+        <header class="fs-3 fw-bold d-flex justify-content-center">
+            Add FoodItem
+        </header>
+        <div>
+            <a class="btn text-white bg-primary" [routerLink]="['/Food/']">
+                Back
+            </a>
+        </div>
+    </div>
+    <form [formGroup]="form">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Name</span>
+            </div>
+            <input type="text" class="form-control" id="name" formControlName="name"
+                placeholder="name">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Price</span>
+            </div>
+            <input type="number" class="form-control" id="price" formControlName="price"
+                placeholder="Price">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Veg</span>
+            </div>
+            <input class="form-check-input" type="checkbox" formControlName="isVeg" checked>
+        </div>
+    </form>
+    <div class="mt-3">
+        <button class="btn bg-primary text-white px-3 w-100" type="button" (click)="formSubmit()"
+            [disabled]="!form.valid">
+            Add
+        </button>
+    </div>
+</div>

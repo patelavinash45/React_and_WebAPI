@@ -17,5 +17,7 @@ namespace Services.Interface
         Task<int> AddFood(CreateFoodDto createFoodDto);
 
         Task<bool> DeleteFood(int foodId);
+
+        Task<bool> UpdateFood(FoodDto foodDto, int foodId);
     }
 }

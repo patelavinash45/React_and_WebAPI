@@ -66,6 +66,19 @@ namespace Services.Implementation
             return false;
         }
 
+        public async Task<bool> UpdateFood(FoodDto foodDto, int foodId)
+        {
+            FoodList? foodList = _foodRepository.GetFood(foodId);
+            if (foodList != null)
+            {
+                foodList.Name = foodDto.Name;
+                foodList.IsVeg = foodDto.IsVeg;
+                foodList.Price = foodDto.Price;
+                return await _foodRepository.UpdateFood(foodList);
+            }
+            return false;
+        }
+
         public Task<bool> AddProductToCart(CartDto cartDto)
         {
             Cart? cart = _cartRepository.GetCartByUserIdAndFoodId(userId: cartDto.UserId, foodId: cartDto.FoodId);
