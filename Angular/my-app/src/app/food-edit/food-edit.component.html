@@ -9,32 +9,38 @@
             </a>
         </div>
     </div>
-    <form [formGroup]="form">
+    @defer (when foodItem!=null)
+    {
+    <form [formGroup]="form" (submit)="formSubmit()">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon3">Name</span>
             </div>
-            <input type="text" class="form-control" id="name" formControlName="name"
+            <input type="text" class="form-control" id="name"
+                formControlName="name"
                 placeholder="name">
         </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon3">Price</span>
             </div>
-            <input type="number" class="form-control" id="price" formControlName="price"
+            <input type="number" class="form-control" id="price"
+                formControlName="price"
                 placeholder="Price">
         </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon3">Veg</span>
             </div>
-            <input class="form-check-input" type="checkbox" formControlName="isVeg" checked>
+            <input class="form-check-input" type="checkbox"
+                formControlName="isVeg" checked>
+        </div>
+        <div class="mt-3">
+            <button class="btn bg-primary text-white px-3 w-100" type="button"
+                [disabled]="!form.valid">
+                Update
+            </button>
         </div>
     </form>
-    <div class="mt-3">
-        <button class="btn bg-primary text-white px-3 w-100" type="button" (click)="formSubmit()"
-            [disabled]="!form.valid">
-            Update
-        </button>
-    </div>
+    }
 </div>

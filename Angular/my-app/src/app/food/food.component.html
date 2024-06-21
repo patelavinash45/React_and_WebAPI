@@ -1,4 +1,4 @@
-<div class="container fs-4 border border-1 rounded-2 p-3 mt-5">
+<div class="container fs-4 border border-1 rounded-3 p-3 mt-5 shadow">
     <div class="d-flex justify-content-between align-items-center mx-2">
         <header class="fs-3 fw-bold d-flex justify-content-center">
             List of Food
@@ -30,7 +30,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let foodItem of foodItems">
+                @for(foodItem of foodItems; track foodItem.foodId)
+                {
+                @defer () {
+                <tr>
                     <td>
                         {{foodItem.foodId}}
                     </td>
@@ -39,6 +42,7 @@
                     </td>
                     <td>
                         {{foodItem.isVeg}}
+                        <!-- <input [value]="foodItem.isVeg" type="checkbox" [disabled]="true" /> -->
                     </td>
                     <td>
                         {{foodItem.price}}
@@ -52,12 +56,17 @@
                             [routerLink]="['/Food/View/', foodItem.foodId]">
                             View
                         </a>
-                        <a class="btn bg-primary text-white"
+                        <!-- <a class="btn bg-primary text-white"
                             [routerLink]="['/Food/Edit/', foodItem.foodId]">
                             Edit
-                        </a>
+                        </a> -->
+                        <button class="btn bg-primary text-white" (click)="navigateToEditPage(foodItem)">
+                            Edit
+                        </button>
                     </td>
                 </tr>
+                }
+                }
             </tbody>
         </table>
     </div>

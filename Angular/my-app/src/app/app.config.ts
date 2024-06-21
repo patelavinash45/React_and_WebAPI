@@ -1,11 +1,14 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideHttpClient } from '@angular/common/http';
-import { DeleteModalComponent } from './ChildComponents/delete-modal/delete-modal.component';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { apiCallInterceptor } from '../APICall/api-call-interceptor.interceptor';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideClientHydration(), provideHttpClient(), DeleteModalComponent]
+  providers: [
+    provideRouter(routes),
+    provideClientHydration(),
+    provideHttpClient(withInterceptors([apiCallInterceptor])),
+  ],
 };

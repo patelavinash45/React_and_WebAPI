@@ -9,6 +9,8 @@
             </a>
         </div>
     </div>
+    @defer (when foodItem != null)
+    {
     <div class="mt-3">
         <strong> Name : </strong>
         {{foodItem.name}}
@@ -22,9 +24,14 @@
         {{foodItem.price}}
     </div>
     <div class="mt-3">
-        <a class="btn bg-primary text-white px-3 w-100"
+        <!-- <a class="btn bg-primary text-white px-3 w-100"
             [routerLink]="['/Food/Edit/', foodItem.foodId]">
             Edit
-        </a>
+        </a> -->
+        <button class="btn bg-primary text-white px-3 w-100"
+            (click)="navigateToEditPage(foodItem)">
+            Edit
+        </button>
     </div>
+    }
 </div>

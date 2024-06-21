@@ -8,7 +8,7 @@ using Services.Interface;
 
 namespace FoodAPI.Controllers
 {
-    //[Authorization]
+    [Authorization]
     [ApiController]
     [Route("[controller]")]
     [ApiVersion("1")]

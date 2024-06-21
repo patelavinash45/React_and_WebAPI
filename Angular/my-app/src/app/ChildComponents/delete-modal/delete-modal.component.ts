@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild, viewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { APICallService } from '../../../APICall/apicall.service';
 import { Router } from '@angular/router';
 
@@ -13,13 +13,11 @@ import { Router } from '@angular/router';
 export class DeleteModalComponent {
   @Input() foodId!: number;
 
-  constructor(private apiCallService: APICallService, private router: Router) {
-  }
+  constructor(private apiCallService: APICallService, private router: Router) {}
 
   conformDelete() {
-    console.log(this.foodId);
     this.apiCallService.DeleteFoodItem(this.foodId).subscribe(() => {
       this.router.navigate(['/Food']);
-    });
+    }); 
   }
 }

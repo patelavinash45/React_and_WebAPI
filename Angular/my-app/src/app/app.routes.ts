@@ -17,6 +17,9 @@ export const routes: Routes = [
   {
     path: 'Food/Edit/:foodId',
     component: FoodEditComponent,
+    data: {
+      state: 'some-state-data',
+    },
   },
   {
     path: 'Food/Add',
