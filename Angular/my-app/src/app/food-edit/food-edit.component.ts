@@ -26,12 +26,12 @@ export class FoodEditComponent {
     private apiCallService: APICallService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.foodId = this.route.snapshot.params['foodId'];
-    this.route.queryParams.subscribe(() => {
-      this.foodItem = history.state.foodItem;
+    this.apiCallService.GetFoodItem(this.foodId).subscribe((data) => {
+      this.foodItem = data.result;
       this.form = new FormGroup({
         name: new FormControl(this.foodItem.name, Validators.required),
         isVeg: new FormControl(this.foodItem.isVeg, Validators.required),

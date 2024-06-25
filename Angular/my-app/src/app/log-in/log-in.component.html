@@ -1,19 +1,41 @@
-<div class="container">
-    <div class="d-flex justify-content-center">
+<div
+    class="container d-flex align-items-center flex-column vh-100 justify-content-center">
+    <div class="w-100 text-center fs-3 fw-bold mb-2">
         Log In
     </div>
-    <form>
+    <form [formGroup]="logInForm" (submit)="fromSubmit()">
         <div class="form-floating mb-3">
             <input type="email" class="form-control" id="floatingInput"
+                formControlName="email"
                 placeholder="name@example.com">
             <label for="floatingInput">Email address</label>
+            <span class="text-danger mt-1 mx-1"
+                *ngIf="logInForm.controls['email'].invalid && (logInForm.controls['email'].touched || logInForm.controls['email'].dirty)">
+                <span *ngIf="logInForm.controls['email'].errors?.['required']">
+                    Email Is Required.
+                </span>
+                <span *ngIf="logInForm.controls['email'].errors?.['email']">
+                    Email Is Not Valid.
+                </span>
+            </span>
         </div>
         <div class="form-floating">
             <input type="password" class="form-control" id="floatingPassword"
-                placeholder="Password">
+                formControlName="password" placeholder="Password">
             <label for="floatingPassword">Password</label>
+            <span class="text-danger mt-1 mx-1"
+                *ngIf="logInForm.controls['password'].invalid && (logInForm.controls['password'].touched || logInForm.controls['password'].dirty)">
+                <span
+                    *ngIf="logInForm.controls['password'].errors?.['required']">
+                    Password Is Required.
+                </span>
+                <span
+                    *ngIf="logInForm.controls['password'].errors?.['minlength']">
+                    Password Must be 8 Character Long.
+                </span>
+            </span>
         </div>
-        <button class="btn btn-primary">
+        <button class="btn btn-primary mt-2 w-100" type="submit">
             Log In
         </button>
     </form>

@@ -8,7 +8,7 @@ using Services.Interface;
 
 namespace FoodAPI.Controllers
 {
-    [Authorization]
+    //[Authorization]
     [ApiController]
     [Route("[controller]")]
     [ApiVersion("1")]
@@ -25,16 +25,16 @@ namespace FoodAPI.Controllers
             _configurationString = configuration.GetConnectionString("DefaultString");
         }
 
-        [HttpGet("GetFoodList", Name = "GetFoodList")]
+        [HttpPatch("GetFoodList/pageNo={pageNo}&pageSize={pageSize}", Name = "GetFoodList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<APIResponse> GetFoodList()
+        public ActionResult<APIResponse> GetFoodList([FromBody] FilterDto filterDto, int pageNo = 1, int pageSize = 5)
         {
             try
             {
-                var foodList = _cartService.GetFoodDtos();
+                var foodList = _cartService.GetFoodDtos(filterDto, pageNo, pageSize);
                 return Ok(HelperClass.ManageOkResponse(foodList));
             }
             catch (Exception e)

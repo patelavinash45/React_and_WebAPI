@@ -12,9 +12,26 @@ namespace Repositories.Implementation
             _foodContext = foodContext;
         }
 
-        public List<FoodList> GetFoodLists()
+        public int CountFoodList(string? searchElement)
         {
-            return _foodContext.FoodLists.OrderBy(a => a.FoodId).ToList();
+            Func<FoodList, bool> foodPredicate = (a =>
+                searchElement == null || a.Name.ToLower().Contains(searchElement.ToLower()));
+            return _foodContext.FoodLists.Count(foodPredicate);
+        }
+
+        public List<FoodList> GetFoodLists(string? searchElement, bool lowToHigh, int skip, int pageSize)
+        {
+            Func<FoodList, bool> foodPredicate = (a =>
+                searchElement == null || a.Name.ToLower().Contains(searchElement.ToLower()));
+            var query = _foodContext.FoodLists.Where(foodPredicate).OrderBy(a => a.FoodId);
+            if (lowToHigh)
+            {
+                return query.OrderBy(a => a.Price).Skip(skip).Take(pageSize).ToList();
+            }
+            else
+            {
+                return query.OrderByDescending(a => a.Price).Skip(skip).Take(pageSize).ToList();
+            }
         }
 
         public FoodList? GetFood(int foodId)

@@ -4,7 +4,7 @@ namespace Services.Interface
 {
     public interface ICartService
     {
-        List<FoodDto> GetFoodDtos();
+        object GetFoodDtos(FilterDto filterDto, int pageNo, int pageSize);
 
         Task<bool> AddProductToCart(CartDto cartDto);
 

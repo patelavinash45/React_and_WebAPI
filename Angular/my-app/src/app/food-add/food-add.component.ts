@@ -21,7 +21,7 @@ export class FoodAddComponent {
     private apiCallService: APICallService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.foodId = this.route.snapshot.params['foodId'];

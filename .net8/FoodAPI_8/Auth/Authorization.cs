@@ -1,10 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
 using FoodAPI.StaticMethods;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using Services.Interface;
-using System.IdentityModel.Tokens.Jwt;
-
 public class Authorization : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)

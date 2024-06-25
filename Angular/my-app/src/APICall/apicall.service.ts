@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FoodItem } from '../Interfaces/food-item';
+import { FilterDto } from '../Interfaces/filter-dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class APICallService {
   private baseUrl = 'http://localhost:5046';
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
-  public GetAll(): Observable<any> {
-    return this.httpClient.get(this.baseUrl + '/Food/GetFoodList');
+  public GetAll(pageNo: number, pageSize: number, filterDto: FilterDto): Observable<any> {
+    return this.httpClient.patch(
+      this.baseUrl + `/Food/GetFoodList/pageNo=${pageNo}&pageSize=${pageSize}`,
+      filterDto);
   }
 
   public GetFoodItem(foodId: number): Observable<any> {
@@ -36,11 +39,7 @@ export class APICallService {
     );
   }
 
-  public LogIn(email: string, password: string) {
-    const user = {
-      email: email,
-      password: password,
-    };
+  public LogIn(user: any): Observable<any> {
     return this.httpClient.patch(this.baseUrl + '/User/ValidateUser', user);
   }
 }

@@ -4,7 +4,9 @@ namespace Repositories.Interface
 {
     public interface IFoodRepository
     {
-        List<FoodList> GetFoodLists();
+        int CountFoodList(string? searchElement);
+
+        List<FoodList> GetFoodLists(string? searchElement, bool lowToHigh, int skip, int pageSize);
 
         FoodList? GetFood(int foodId);
 

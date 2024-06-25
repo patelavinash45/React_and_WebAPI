@@ -2,10 +2,8 @@ namespace Services.Dtos
 {
     public class FilterDto
     {
-        public required string SearchElement { get; set; }
+        public string? SearchElement { get; set; } = null;
 
-        public bool IsVeg { get; set; }
-
-        public bool IsHighToLow { get; set; }
+        public bool LowToHigh { get; set; } = true;
     }
 }

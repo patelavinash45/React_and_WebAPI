@@ -16,18 +16,28 @@ namespace Services.Implementation
             _foodRepository = foodRepository;
         }
 
-        public List<FoodDto> GetFoodDtos()
+        public object GetFoodDtos(FilterDto filterDto, int pageNo, int pageSize)
         {
-            // Func<FoodList, bool> foodPredicate = (a =>
-            //     (filterDto.SearchElement == null || a.Name.ToLower().Contains(filterDto.SearchElement.ToLower()))
-            //     && (filterDto.IsVeg == null || a.IsVeg == filterDto.IsVeg));
-            return _foodRepository.GetFoodLists().Select(foodList => new FoodDto()
+            int skip = (pageNo - 1) * pageSize;
+            List<FoodDto> foodDtos = _foodRepository.GetFoodLists(filterDto.SearchElement, filterDto.LowToHigh, skip, pageSize)
+            .Select(foodList => new FoodDto()
             {
                 Name = foodList.Name,
                 FoodId = foodList.FoodId,
                 Price = foodList.Price,
                 IsVeg = foodList.IsVeg
             }).ToList();
+            int totalItems = _foodRepository.CountFoodList(filterDto.SearchElement);
+            int totalPages = (totalItems + pageSize - 1) / pageSize;
+            return new
+            {
+                TotalItems = totalItems,
+                Records = foodDtos,
+                CurrentPageNo = pageNo,
+                PageSize = pageSize,
+                isNext = totalPages > pageNo,
+                isPrevious = pageNo != 1
+            };
         }
 
         public FoodDto? GetFood(int foodId)
