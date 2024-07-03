@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { APICallService } from '../../APICall/apicall.service';
+import { APICallService } from '../../Services/APICall/apicall.service';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { ShowToasterService } from '../../Services/show-toaster.service';
 
 @Component({
   selector: 'app-log-in',
@@ -20,7 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 export class LogInComponent {
   logInForm!: FormGroup;
 
-  constructor(private apiCallService: APICallService, private router: Router, private toaster: ToastrService) { }
+  constructor(private apiCallService: APICallService, private router: Router, private toaster: ShowToasterService) { }
 
   ngOnInit(): void {
     this.logInForm = new FormGroup({
@@ -32,7 +32,7 @@ export class LogInComponent {
   fromSubmit() {
     if (this.logInForm.valid) {
       this.apiCallService.LogIn(this.logInForm.value).subscribe((response) => {
-        this.toaster.success("Log In Successfully.");
+        this.toaster.showSuccessMessage("Log In Successfully.");
         localStorage.setItem('jwtToken', response.result.jwtToken);
         this.router.navigate(['/Food']);
       });

@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from '../Route/app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { apiCallInterceptor } from '../APICall/api-call-interceptor.interceptor';
+import { apiCallInterceptor } from '../Services/APICall/api-call-interceptor.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 
@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr({
       progressBar: true,
-      timeOut: 10000,
+      timeOut: 3000,
       closeButton: true
     }),
   ],

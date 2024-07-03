@@ -1,10 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FoodItem } from '../../Interfaces/food-item';
-import { APICallService } from '../../APICall/apicall.service';
+import { APICallService } from '../../Services/APICall/apicall.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { DeleteModalComponent } from '../ChildComponents/delete-modal/delete-modal.component';
 import { FilterDto } from '../../Interfaces/filter-dto';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 declare var $: any;
 
 @Component({
@@ -22,14 +23,26 @@ export class FoodComponent {
   filterDto: FilterDto = {
     searchElement: null,
     lowToHigh: true,
+    foodType: 0,
   };
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
-  constructor(public apiCallService: APICallService, private router: Router) { }
+  @Input() animationTime: number = 0.2;
+  private searchSubject = new Subject<string>();
+
+  constructor(public apiCallService: APICallService, private router: Router) {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((searchTerm: string) => {
+      this.pageNo = 1;
+      this.filterDto.searchElement = searchTerm;
+      this.getData();
+    });
+  }
 
   getData() {
     this.apiCallService.GetAll(this.pageNo, this.pageSize, this.filterDto).subscribe((data) => {
       this.details = data.result;
-      console.log(data);
       this.foodItems = data.result.records;
     });
   }
@@ -39,7 +52,13 @@ export class FoodComponent {
   }
 
   onPageSizeSelectChange(event: any) {
+    this.pageNo = 1;
     this.pageSize = event.target.value;
+    this.getData();
+  }
+
+  onFoodTypeSelectChange(event: any) {
+    this.filterDto.foodType = event.target.value;
     this.getData();
   }
 
@@ -54,8 +73,7 @@ export class FoodComponent {
   }
 
   searchItem(event: any) {
-    this.filterDto.searchElement = event.target.value;
-    this.getData();
+    this.searchSubject.next(event.target.value);
   }
 
   deleteFoodItem(foodId: number) {
@@ -67,5 +85,10 @@ export class FoodComponent {
     this.router.navigate(['/Food/Edit/', foodItem.foodId], {
       state: { foodItem },
     });
+  }
+
+  LogOut() {
+    localStorage.removeItem("jwtToken");
+    this.router.navigate(['/LogIn']);
   }
 }

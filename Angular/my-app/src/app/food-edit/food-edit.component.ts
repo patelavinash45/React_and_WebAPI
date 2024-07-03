@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FoodItem } from '../../Interfaces/food-item';
-import { APICallService } from '../../APICall/apicall.service';
+import { APICallService } from '../../Services/APICall/apicall.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   FormControl,
@@ -9,6 +9,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { ShowToasterService } from '../../Services/show-toaster.service';
 
 @Component({
   selector: 'app-food-edit',
@@ -25,7 +26,8 @@ export class FoodEditComponent {
   constructor(
     private apiCallService: APICallService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toaster: ShowToasterService
   ) { }
 
   ngOnInit(): void {
@@ -44,6 +46,7 @@ export class FoodEditComponent {
     this.apiCallService
       .UpdateFoodItem(this.foodId, this.form.value)
       .subscribe(() => {
+        this.toaster.showSuccessMessage("Item Updated Successfully.");
         this.router.navigate(['Food/View/', this.foodId]);
       });
   }

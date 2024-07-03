@@ -3,12 +3,12 @@
     <div class="w-100 text-center fs-3 fw-bold mb-2">
         Log In
     </div>
-    <form [formGroup]="logInForm" (submit)="fromSubmit()">
+    <form [formGroup]="logInForm" (submit)="fromSubmit()" class="shadow-lg p-3 rounded-2">
         <div class="form-floating mb-3">
             <input type="email" class="form-control" id="floatingInput"
                 formControlName="email"
                 placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
+            <label for="floatingInput">Email Address</label>
             <span class="text-danger mt-1 mx-1"
                 *ngIf="logInForm.controls['email'].invalid && (logInForm.controls['email'].touched || logInForm.controls['email'].dirty)">
                 <span *ngIf="logInForm.controls['email'].errors?.['required']">

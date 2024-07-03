@@ -5,6 +5,8 @@ import { FoodEditComponent } from '../app/food-edit/food-edit.component';
 import { FoodAddComponent } from '../app/food-add/food-add.component';
 import { LogInComponent } from '../app/log-in/log-in.component';
 import { authGuard } from './Guard/auth.guard';
+import { formGuard } from './Guard/form.guard';
+import { logInGuard } from './Guard/log-in.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'LogIn', pathMatch: 'full' },
@@ -12,6 +14,7 @@ export const routes: Routes = [
     path: 'Food',
     component: FoodComponent,
     canActivate: [authGuard],
+    title: 'Food'
   },
   {
     path: 'Food',
@@ -20,10 +23,12 @@ export const routes: Routes = [
       {
         path: 'View/:foodId',
         component: FoodViewComponent,
+        title: 'View Food'
       },
       {
         path: 'Edit/:foodId',
         component: FoodEditComponent,
+        title: 'Edit Food',
         data: {
           state: 'data',
         },
@@ -31,26 +36,17 @@ export const routes: Routes = [
       {
         path: 'Add',
         component: FoodAddComponent,
+        title: 'Add Food',
       },
     ],
   },
-  // {
-  //   path: 'Food/View/:foodId',
-  //   component: FoodViewComponent,
-  // },
-  // {
-  //   path: 'Food/Edit/:foodId',
-  //   component: FoodEditComponent,
-  //   data: {
-  //     state: 'data',
-  //   },
-  // },
-  // {
-  //   path: 'Food/Add',
-  //   component: FoodAddComponent,
-  // },
   {
     path: 'LogIn',
     component: LogInComponent,
+    canActivate: [logInGuard]
   },
+  {
+    path: '**',
+    redirectTo: 'LogIn',
+  }
 ];

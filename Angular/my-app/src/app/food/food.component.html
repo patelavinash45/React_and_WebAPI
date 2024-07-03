@@ -3,28 +3,41 @@
         <header class="fs-3 fw-bold d-flex justify-content-center">
             List of Food
         </header>
-        <a class="btn bg-success text-white me-2" [routerLink]="['/Food/Add']">
-            Add FoodItem
-        </a>
+        <div>
+            <a class="btn bg-success text-white me-2"
+                [routerLink]="['/Food/Add']">
+                Add FoodItem
+            </a>
+            <button class="btn bg-danger text-white me-2" (click)="LogOut()">
+                Log Out
+            </button>
+        </div>
     </div>
     <hr />
-    <div>
-        <input type="search" class="w-100 rounded-2" placeholder="Search Item" (input)="searchItem($event)" />
+    <div class="d-flex">
+        <input type="search" class="w-50 rounded-2 mx-2" placeholder="Search"
+            (input)="searchItem($event)" />
+        <select (change)="onFoodTypeSelectChange($event)"
+            class="w-50 rounded-2 mx-2">
+            <option value=0>No Filter</option>
+            <option value=1>Veg</option>
+            <option value=2>Non Veg</option>
+        </select>
     </div>
     <div class="table-responsive">
-        <table class="table">
+        <table class="table text-center">
             <thead>
                 <tr>
-                    <th>
+                    <th class="col-1">
                         Index
                     </th>
-                    <th>
+                    <th class="col-3">
                         Name
                     </th>
-                    <th>
+                    <th class="col-2">
                         Is-Veg
                     </th>
-                    <th>
+                    <th class="col-3">
                         Price
                         <button class="border-0 bg-white fs-5 fs-bold"
                             (click)="onPriceFilterChange()">
@@ -36,18 +49,19 @@
                             }
                         </button>
                     </th>
-                    <th>
+                    <th class="col-3">
                         Action
                     </th>
                 </tr>
             </thead>
             <tbody>
-                @for(foodItem of foodItems; track foodItem.foodId; let i=$index)
+                @for(foodItem of foodItems; track foodItem.foodId; let i=$index;)
                 {
                 @defer () {
-                <tr>
+                <tr [ngClass]="'animation'+(i+1)" 
+                    [style.animation.delay]="((i+1)*0.2)+'s'">
                     <td>
-                        {{i +1 }}
+                        {{(pageNo* pageSize)-(pageSize-i) +1}}
                     </td>
                     <td>
                         {{foodItem.name | uppercase }}
@@ -56,7 +70,7 @@
                         {{foodItem.isVeg}}
                     </td>
                     <td>
-                        {{foodItem.price | number:'2.2-2'}}
+                        {{foodItem.price | currency:'INR'}}
                     </td>
                     <td>
                         <button class="btn bg-danger mx-2 text-white"
@@ -84,15 +98,14 @@
             <select class="mx-2 rounded-2"
                 (change)="onPageSizeSelectChange($event)">
                 <option value=5 selected>5</option>
-                <option value=7>7</option>
                 <option value=10>10</option>
-                <option value=12>12</option>
                 <option value=15>15</option>
                 <option value=20>20</option>
             </select>
         </div>
         <div>
             <nav>
+                @defer(){
                 <ul class="pagination">
                     <li class="page-item">
                         <button class="page-link"
@@ -109,6 +122,8 @@
                             [ngClass]="{'disabled': !details.isNext}">Next</button>
                     </li>
                 </ul>
+                }
+                @loading{}
             </nav>
         </div>
     </div>

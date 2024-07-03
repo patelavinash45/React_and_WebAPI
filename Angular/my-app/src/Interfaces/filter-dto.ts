@@ -1,4 +1,11 @@
 export interface FilterDto {
     searchElement: string | null,
-    lowToHigh: boolean
+    lowToHigh: boolean,
+    foodType: FoodType
+};
+
+const enum FoodType {
+    NoFilter,
+    Veg,
+    NonVeg
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FoodItem } from '../../Interfaces/food-item';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { APICallService } from '../../APICall/apicall.service';
+import { APICallService } from '../../Services/APICall/apicall.service';
 
 @Component({
   selector: 'app-food-view',
@@ -19,7 +19,7 @@ export class FoodViewComponent {
     public apiCallService: APICallService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.foodId = this.route.snapshot.params['foodId'];

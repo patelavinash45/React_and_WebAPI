@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FoodItem } from '../../Interfaces/food-item';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { APICallService } from '../../APICall/apicall.service';
+import { APICallService } from '../../Services/APICall/apicall.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ShowToasterService } from '../../Services/show-toaster.service';
 
 @Component({
   selector: 'app-food-add',
@@ -20,7 +21,8 @@ export class FoodAddComponent {
   constructor(
     private apiCallService: APICallService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toaster: ShowToasterService
   ) { }
 
   ngOnInit(): void {
@@ -36,6 +38,7 @@ export class FoodAddComponent {
     this.apiCallService
       .AddFoodItem(this.form.value)
       .subscribe(() => {
+        this.toaster.showSuccessMessage("Item Added Successfully.");
         this.router.navigate(['/Food']);
       });
   }

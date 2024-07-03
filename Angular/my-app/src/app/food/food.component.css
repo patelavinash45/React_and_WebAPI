@@ -1,0 +1,37 @@
+@keyframes fadIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@for $i from 1 through 5 {
+    .animation#{$i} {
+        animation: fadeIn calc(#{$i} * 0.2s) ease-out;
+    }
+}
+
+/* .animation1 {
+    animation: fadIn 0.2s ease-out;
+}
+
+.animation2 {
+    animation: fadIn 0.4s ease-out;
+}
+
+.animation3 {
+    animation: fadIn 0.6s ease-out;
+}
+
+.animation4 {
+    animation: fadIn 0.8s ease-out;
+}
+
+.animation5 {
+    animation: fadIn 1s ease-out;
+} */
